@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Slike</string>
+    <string name="title_activity_feed">FeedActivity</string>
+    <string name="send">Send</string>
+</resources>
