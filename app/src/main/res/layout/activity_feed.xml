@@ -30,12 +30,20 @@
         >
 
         <Button
-            android:id="@+id/btnSend"
+            android:id="@+id/btnMedia"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:background="@android:drawable/ic_media_play"
             />
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:drawable/ic_menu_camera"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/btnMedia" />
 
         <EditText
             android:id="@+id/etMessage"

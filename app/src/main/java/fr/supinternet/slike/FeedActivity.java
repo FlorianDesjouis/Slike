@@ -1,5 +1,6 @@
 package fr.supinternet.slike;
 
+import android.content.Intent;
 import android.os.*;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 public class FeedActivity extends AppCompatActivity {
 
     private RecyclerView rvList;
-    private Button btnSend;
+    private Button btnSend, btnMedia;
     private EditText etMessage;
     private TextView tvTypingPeople;
 
@@ -51,6 +52,7 @@ public class FeedActivity extends AppCompatActivity {
         btnSend = (Button) findViewById(R.id.btnSend);
         etMessage = (EditText) findViewById(R.id.etMessage);
         tvTypingPeople = (TextView) findViewById(R.id.tvTypingPeople);
+        btnMedia = (Button) findViewById(R.id.btnMedia);
 
         etMessage.addTextChangedListener(new TextWatcher() {
             @Override
@@ -79,6 +81,16 @@ public class FeedActivity extends AppCompatActivity {
                     FirebaseUtils.sendMessage(message);
                     etMessage.setText("");
                 }
+            }
+        });
+
+        btnMedia.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Choose picture"), 1);
             }
         });
 
@@ -116,5 +128,69 @@ public class FeedActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void listenToTypingPeople(){
+        FirebaseUtils.listenToTypingPeople(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                typingPeople.add(dataSnapshot.getKey());
+                updateTypingPeople();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                typingPeople.remove(dataSnapshot.getKey());
+                updateTypingPeople();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private  void updateTypingPeople(){
+        if (typingPeople.size() > 0){
+            tvTypingPeople.setVisibility(View.VISIBLE);
+            tvTypingPeople.setText(getTypingPeopleDisplayText());
+        }else {
+            tvTypingPeople.setVisibility(View.GONE);
+        }
+    }
+
+    public  String getTypingPeopleDisplayText(){
+
+        if (typingPeople.size() > 3){
+            return "Several people are typing";
+        }
+        else if (typingPeople.size() > 1){
+            StringBuffer buf = new StringBuffer();
+
+            for (int i = 0; 1 < typingPeople.size() ; i++){
+                buf.append(typingPeople.get(i));
+                buf.append(i < typingPeople.size() - 1 ? "," : " ");
+            }
+
+            buf.append("are typing...");
+
+            return buf.toString();
+        }
+        else{
+            return typingPeople.get(0) + " is typing...";
+        }
+    }
+
+
 
 }
